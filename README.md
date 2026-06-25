@@ -26,17 +26,30 @@ isolation**, and a **live chat UI**.
 5. **Retrieve + grounded answer** — nearest-neighbor search (optionally filtered to one patient), then Gemini answers using *only* the retrieved context, citing every claim as `[filename, p.PAGE]` and refusing when the answer isn't present.
 6. **Chat UI (Gradio)** — pick a patient, ask a question, or try the examples. One example deliberately asks for a value that isn't in the records to show the refusal guardrail in action.
 
+## Notebook versions
+
+This repository contains **two notebook implementations** of the same pipeline. They are functionally
+equivalent end to end — they differ only in how the vector index is built and searched:
+
+- **`DaVita_Demo_VectorDB.ipynb` — ChromaDB version.** Uses [ChromaDB](https://www.trychroma.com/) as the vector store (cosine similarity, HNSW index) with built-in metadata filtering for per-patient scoping. This is the recommended version for a more production-like setup.
+- **NumPy version.** Uses a lightweight in-memory **NumPy** index instead of ChromaDB: embeddings are stored in a NumPy array and retrieval is done by computing cosine similarity directly (dot product over normalized vectors), with patient filtering applied manually on the metadata. This version has fewer dependencies (no ChromaDB / `pysqlite3`) and is easier to run anywhere.
+
+Both produce grounded, cited answers with the same refusal guardrail and Gradio chat UI — pick
+whichever fits your environment.
+
 ## Running
 
-The project is a single Jupyter notebook: `DaVita_Final_Demo.ipynb`. It is designed to run in
-Google Colab (or any Jupyter environment).
+Each version is a single Jupyter notebook designed to run in Google Colab (or any Jupyter
+environment).
 
-1. Open the notebook in Colab or Jupyter.
-2. Run the first cell to install dependencies:
+1. Open either notebook in Colab or Jupyter.
+2. Run the first cell to install dependencies. The ChromaDB version installs:
 
    ```
    google-generativeai pypdf reportlab chromadb gradio pysqlite3-binary sentence-transformers
    ```
+
+   The NumPy version needs the same set **minus** `chromadb` and `pysqlite3-binary` (it uses only `numpy`, already available in Colab).
 
 3. Provide your Gemini API key when prompted (in Colab, store it as the secret `GEMINI_API_KEY`).
 4. Run the cells top to bottom and open the Gradio share link from the final cell.
@@ -44,5 +57,5 @@ Google Colab (or any Jupyter environment).
 ## Notes
 
 - All patient data is **synthetic** — generated at runtime purely to exercise the pipeline.
-- A `pysqlite3` shim is applied before importing ChromaDB to satisfy its SQLite version requirement.
+- In the ChromaDB version, a `pysqlite3` shim is applied before importing ChromaDB to satisfy its SQLite version requirement. The NumPy version skips this entirely.
 - Your API key is entered at runtime and is **not** stored in the repository.
