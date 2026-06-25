@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 760" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6b7a"/>
+    </marker>
+    <style>
+      .title{font-size:26px;font-weight:700;fill:#1a2b3c}
+      .sub{font-size:14px;fill:#5b6b7a}
+      .lane{font-size:13px;font-weight:700;fill:#8a97a5;letter-spacing:1px}
+      .box{rx:10;ry:10;stroke-width:2}
+      .btxt{font-size:14px;font-weight:600;fill:#13212f}
+      .bsub{font-size:11px;fill:#5b6b7a}
+      .gcp{font-size:10.5px;fill:#1a73e8;font-style:italic}
+      .edge{stroke:#5b6b7a;stroke-width:2;fill:none}
+    </style>
+  </defs>
+
+  <text x="40" y="46" class="title">DaVita IKC — Clinical RAG Pipeline</text>
+  <text x="40" y="70" class="sub">ingest → chunk → index → retrieve → cite &#160;|&#160; grounded answers, inline citations, refusal guardrail, measured eval</text>
+
+  <!-- INGESTION LANE -->
+  <rect x="30" y="95" width="1120" height="230" rx="14" fill="#f4f8fb" stroke="#d8e2ea"/>
+  <text x="50" y="120" class="lane">INGESTION  (offline / batch)</text>
+
+  <!-- ingestion boxes -->
+  <g>
+    <rect class="box" x="55"  y="140" width="180" height="120" fill="#eaf3ff" stroke="#1a73e8"/>
+    <text x="145" y="170" class="btxt" text-anchor="middle">External clinic</text>
+    <text x="145" y="190" class="btxt" text-anchor="middle">PDFs / faxes</text>
+    <text x="145" y="214" class="bsub" text-anchor="middle">messy, inconsistent</text>
+    <text x="145" y="246" class="gcp" text-anchor="middle">→ Cloud Storage</text>
+
+    <rect class="box" x="275" y="140" width="180" height="120" fill="#ffffff" stroke="#1a73e8"/>
+    <text x="365" y="174" class="btxt" text-anchor="middle">Parse &amp; clean</text>
+    <text x="365" y="196" class="bsub" text-anchor="middle">extract text +</text>
+    <text x="365" y="212" class="bsub" text-anchor="middle">per-page provenance</text>
+    <text x="365" y="246" class="gcp" text-anchor="middle">→ Document AI</text>
+
+    <rect class="box" x="495" y="140" width="180" height="120" fill="#ffffff" stroke="#1a73e8"/>
+    <text x="585" y="174" class="btxt" text-anchor="middle">Structure-aware</text>
+    <text x="585" y="194" class="btxt" text-anchor="middle">chunking</text>
+    <text x="585" y="216" class="bsub" text-anchor="middle">section + overlap + metadata</text>
+    <text x="585" y="246" class="gcp" text-anchor="middle">mrn · section · page</text>
+
+    <rect class="box" x="715" y="140" width="180" height="120" fill="#ffffff" stroke="#1a73e8"/>
+    <text x="805" y="180" class="btxt" text-anchor="middle">Embed chunks</text>
+    <text x="805" y="202" class="bsub" text-anchor="middle">text-embedding-004</text>
+    <text x="805" y="246" class="gcp" text-anchor="middle">→ Vertex AI</text>
+
+    <rect class="box" x="945" y="140" width="180" height="120" fill="#eaffea" stroke="#1e8e3e"/>
+    <text x="1035" y="180" class="btxt" text-anchor="middle">Vector Index</text>
+    <text x="1035" y="202" class="bsub" text-anchor="middle">cosine similarity</text>
+    <text x="1035" y="246" class="gcp" text-anchor="middle">→ Vertex Vector Search</text>
+
+    <path class="edge" d="M235,200 H275" marker-end="url(#arrow)"/>
+    <path class="edge" d="M455,200 H495" marker-end="url(#arrow)"/>
+    <path class="edge" d="M675,200 H715" marker-end="url(#arrow)"/>
+    <path class="edge" d="M895,200 H945" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- QUERY LANE -->
+  <rect x="30" y="345" width="1120" height="300" rx="14" fill="#fbf6f4" stroke="#ecd9d2"/>
+  <text x="50" y="370" class="lane">QUERY  (online / real-time)</text>
+
+  <rect class="box" x="55" y="395" width="180" height="100" fill="#fff3e9" stroke="#e8710a"/>
+  <text x="145" y="430" class="btxt" text-anchor="middle">Clinician</text>
+  <text x="145" y="452" class="btxt" text-anchor="middle">question</text>
+  <text x="145" y="476" class="bsub" text-anchor="middle">+ patient context (mrn)</text>
+
+  <rect class="box" x="275" y="395" width="180" height="100" fill="#ffffff" stroke="#e8710a"/>
+  <text x="365" y="438" class="btxt" text-anchor="middle">Embed query</text>
+  <text x="365" y="462" class="bsub" text-anchor="middle">retrieval_query</text>
+
+  <rect class="box" x="495" y="395" width="180" height="100" fill="#ffffff" stroke="#e8710a"/>
+  <text x="585" y="430" class="btxt" text-anchor="middle">Retrieve top-k</text>
+  <text x="585" y="454" class="bsub" text-anchor="middle">+ metadata filter</text>
+  <text x="585" y="472" class="bsub" text-anchor="middle">(single-patient scope)</text>
+
+  <rect class="box" x="715" y="395" width="180" height="100" fill="#ffffff" stroke="#e8710a"/>
+  <text x="805" y="430" class="btxt" text-anchor="middle">Grounded prompt</text>
+  <text x="805" y="454" class="bsub" text-anchor="middle">context + rules:</text>
+  <text x="805" y="472" class="bsub" text-anchor="middle">cite · refuse if unknown</text>
+
+  <rect class="box" x="945" y="395" width="180" height="100" fill="#fff3e9" stroke="#e8710a"/>
+  <text x="1035" y="424" class="btxt" text-anchor="middle">Gemini answer</text>
+  <text x="1035" y="448" class="bsub" text-anchor="middle">+ inline [citations]</text>
+  <text x="1035" y="468" class="bsub" text-anchor="middle">refuses if not in records</text>
+
+  <path class="edge" d="M235,445 H275" marker-end="url(#arrow)"/>
+  <path class="edge" d="M455,445 H495" marker-end="url(#arrow)"/>
+  <path class="edge" d="M675,445 H715" marker-end="url(#arrow)"/>
+  <path class="edge" d="M895,445 H945" marker-end="url(#arrow)"/>
+
+  <!-- index feeds retrieval -->
+  <path class="edge" d="M1035,260 V300 H585 V395" marker-end="url(#arrow)"/>
+  <text x="600" y="292" class="gcp">index serves retrieval</text>
+
+  <!-- eval / governance footer -->
+  <rect class="box" x="55" y="540" width="1070" height="80" fill="#f4f4f8" stroke="#7b61c9"/>
+  <text x="75" y="568" class="btxt">Cross-cutting:</text>
+  <text x="75" y="592" class="bsub">Evaluation — retrieval hit-rate + answer faithfulness (LLM-as-judge)   •   HIPAA-eligible GCP project under BAA   •   PHI never leaves the project   •   audit logging &amp; role-scoped access   •   MCP server exposes retrieval as a governed tool for agents</text>
+
+  <text x="40" y="690" class="sub">Demo uses Gemini (AI Studio) + synthetic PHI-shaped data. Italic blue labels show the GCP production equivalent.</text>
+</svg>
